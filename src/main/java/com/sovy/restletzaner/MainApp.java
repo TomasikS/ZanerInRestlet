@@ -42,7 +42,7 @@ public class MainApp extends Application {
         component.getDefaultHost().attach("/all/", RestService.class);
         component.getDefaultHost().attach("/add/", RestService.class);
         component.getDefaultHost().attach("/del/", RestService.class);
-        component.getDefaultHost().attach("/find/", RestService2.class);
+        component.getDefaultHost().attach("/find/{id}", RestService2.class);
         new Server(Protocol.HTTP, port, component).start();
 
     }

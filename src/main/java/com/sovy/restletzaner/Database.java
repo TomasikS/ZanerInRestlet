@@ -83,7 +83,7 @@ public class Database {
 
     }
 
-    public Zaner getZanerById(int id) {
+    public Zaner getZanerById(Integer id) {
         String url = "jdbc:postgresql://localhost:5432/bookstore";
         String user = "postgres";
         String password = "postgres";
@@ -100,7 +100,7 @@ public class Database {
                 zaner = (new Zaner(idzaner, name));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Cannot connect to database " + ex.getMessage(), ex);
         }
 
         return zaner;

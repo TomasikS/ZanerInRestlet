@@ -20,14 +20,13 @@ public class RestService2 extends ServerResource {
 
     public Database Databaza = new Database();
 
-    @Get("/find/")
-     @Consumes(MediaType.APPLICATION_JSON)
+    @Get("/find/{id}")
+//     @Consumes(MediaType.APPLICATION_JSON)
 //    @Path("/find/{id}/")
- //   @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Zaner findData() throws SQLException {
-       Integer id;
-       Integer index= (Integer) this.getRequestAttributes().get("id");
-     
-        return Databaza.getZanerById(index);
+//       Integer index= Integer.valueOf( this.getQuery().getValues("id"));
+        Integer id = Integer.valueOf(this.getAttribute("id"));
+        return Databaza.getZanerById(id);
     }
 }
