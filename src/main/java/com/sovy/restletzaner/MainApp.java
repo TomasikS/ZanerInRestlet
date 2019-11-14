@@ -37,25 +37,13 @@ public class MainApp extends Application {
         ;
         };
     Component component = new Component();
-        ///component.getDefaultHost().attach("/", myApp);
 
         component.getDefaultHost().attach("/all/", RestService.class);
         component.getDefaultHost().attach("/add/", RestService.class);
         component.getDefaultHost().attach("/del/", RestService.class);
+        component.getDefaultHost().attach("/update/{id}", RestService2.class);
         component.getDefaultHost().attach("/find/{id}", RestService2.class);
         new Server(Protocol.HTTP, port, component).start();
 
     }
-
-    /*@Override
-    public Restlet createInboundRoot() {
-        Context ctx = getContext();   
-        ctx.getParameters().add("port", Integer.toString(8182));
-        Router router = new Router(getContext());
-        router.attach("/all/", RestService.class);
-        router.attach("/find/test/{id}/", RestService2.class);
-        router.attach("/del/", RestService.class);
-        router.attach("/add/", RestService.class);
-        return router;
-    }*/
 }

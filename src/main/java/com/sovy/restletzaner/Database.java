@@ -19,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -104,6 +105,24 @@ public class Database {
         }
 
         return zaner;
+    }
+
+    public void updateById(Integer id, Zaner zaner) {
+        String url = "jdbc:postgresql://localhost:5432/bookstore";
+        String user = "postgres";
+        String password = "postgres";
+        //Zaner Foundedzaner = getZanerById(id)
+        String sql = "update zaner set meno = '" +  zaner.getName()  + "'where id=" + id;
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+                Statement stmt = conn.createStatement();) {
+
+            stmt.executeUpdate(sql);
+            System.out.println("Database updated successfully ");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

@@ -5,11 +5,12 @@
  */
 package com.sovy.restletzaner;
 
+import com.google.gson.Gson;
 import java.sql.SQLException;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -21,12 +22,16 @@ public class RestService2 extends ServerResource {
     public Database Databaza = new Database();
 
     @Get("/find/{id}")
-//     @Consumes(MediaType.APPLICATION_JSON)
-//    @Path("/find/{id}/")
     @Produces(MediaType.APPLICATION_JSON)
     public Zaner findData() throws SQLException {
-//       Integer index= Integer.valueOf( this.getQuery().getValues("id"));
         Integer id = Integer.valueOf(this.getAttribute("id"));
         return Databaza.getZanerById(id);
+    }
+
+    @Put("/update/{id}")
+    public void updateData(String data) throws SQLException {
+      Integer ud = Integer.valueOf(this.getAttribute("id"));
+       Gson gson = new Gson();
+       Databaza.updateById(ud,gson.fromJson( data, Zaner.class));
     }
 }

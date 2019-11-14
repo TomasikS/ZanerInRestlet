@@ -16,6 +16,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 
 /**
  *
@@ -26,22 +27,19 @@ public class RestService extends ServerResource {
     public Database Databaza = new Database();
 
     @Get("/all")
-//    @Path("/data/")
-   @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public List<Zaner> getData() throws SQLException {
         return Databaza.readData();
     }
 
     @Post("/add/")
-//    @Path("/add/")
-  @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public void insertData(String org) throws SQLException {
         Gson gson = new Gson();
         Databaza.insertData(gson.fromJson(org, Zaner.class));
     }
 
     @Delete("/del/")
-//    @Path("/del/")
     @Consumes(MediaType.APPLICATION_JSON)
     public void removeData(String org) throws SQLException {
         Gson gson = new Gson();
