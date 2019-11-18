@@ -14,6 +14,9 @@ package com.sovy.restletzaner;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import static com.sun.tools.attach.VirtualMachine.list;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -22,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,12 +35,35 @@ import java.util.logging.Logger;
  */
 public class Database {
 
-    private static final String QUERY = "SELECT * from zaner;";
-    Connection connection;
+    public Connection createConnection() throws SQLException, ClassNotFoundException, FileNotFoundException, IOException {
+        Connection connection;
+        Properties properties = new Properties();
+        properties.load(new java.io.FileInputStream("C://Users//stefan.tomasik//Documents//NetBeansProjects//RestletZaner//src//main//java//com//sovy//restletzaner//application.properties"));
+        String url = properties.getProperty("host");
+        String user = properties.getProperty("username");;
+        String password = properties.getProperty("password");
+        String driver = properties.getProperty("driver");
+        Class.forName(driver);
 
-    public List readData() throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");
-        List<Zaner> list = new ArrayList();
+        connection = DriverManager.getConnection(url, user, password);
+        return connection;
+    }
+
+    public List readData() throws SQLException, IOException {
+
+        final String QUERY = "SELECT * from zaner;";
+
+        // Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");
+        Connection connection = null;
+        try {
+            connection = createConnection();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        List<Zaner> zaners = new ArrayList();
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(QUERY);) {
             ResultSet rs = preparedStatement.executeQuery();
@@ -44,11 +71,11 @@ public class Database {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String firstname = rs.getString("meno");
-                list.add(new Zaner(id, firstname));
+                zaners.add(new Zaner(id, firstname));
             }
         }
         connection.close();
-        return list;
+        return zaners;
     }
 
     public void insertData(Zaner meno) throws SQLException {
@@ -112,7 +139,7 @@ public class Database {
         String user = "postgres";
         String password = "postgres";
         //Zaner Foundedzaner = getZanerById(id)
-        String sql = "update zaner set meno = '" +  zaner.getName()  + "'where id=" + id;
+        String sql = "update zaner set meno = '" + zaner.getName() + "'where id=" + id;
 
         try (Connection conn = DriverManager.getConnection(url, user, password);
                 Statement stmt = conn.createStatement();) {

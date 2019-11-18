@@ -6,17 +6,16 @@
 package com.sovy.restletzaner;
 
 import com.google.gson.Gson;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
-import org.restlet.resource.Put;
 
 /**
  *
@@ -28,7 +27,7 @@ public class RestService extends ServerResource {
 
     @Get("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Zaner> getData() throws SQLException {
+    public List<Zaner> getData() throws SQLException, IOException {
         return Databaza.readData();
     }
 
