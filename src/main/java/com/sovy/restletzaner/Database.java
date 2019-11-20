@@ -14,7 +14,6 @@ package com.sovy.restletzaner;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import static com.sun.tools.attach.VirtualMachine.list;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;

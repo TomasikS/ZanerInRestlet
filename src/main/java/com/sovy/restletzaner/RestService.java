@@ -16,12 +16,13 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
+import org.restlet.data.Status;
 
 /**
  *
  * @author stefan.tomasik
  */
-public class RestService extends ServerResource {
+public class RestService extends ServerResource implements MyOperations {
 
     public Database Databaza = new Database();
 
@@ -33,16 +34,48 @@ public class RestService extends ServerResource {
 
     @Post("/add/")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void insertData(String org) throws SQLException {
+    public Status insertData(String org) throws SQLException {
         Gson gson = new Gson();
-        Databaza.insertData(gson.fromJson(org, Zaner.class));
+        Status status = null;
+
+        if ((org.length() == 0) || (org.length() == 3)) {
+            System.out.println("error 200");
+            status = Status.SERVER_ERROR_SERVICE_UNAVAILABLE;
+        } else if ((org.substring(3, 7).equals("meno")) && (org.length() > 6)) {
+            Zaner zaner = gson.fromJson(org, Zaner.class);
+            Databaza.insertData(zaner);
+            status = Status.SUCCESS_OK;
+
+        } else {
+            status = Status.SERVER_ERROR_INTERNAL;
+            System.out.println("error 500");
+        }
+
+        return status;
     }
 
+    /**
+     *
+     * @param org
+     * @throws SQLException
+     * @throws MyValidationException
+     */
     @Delete("/del/")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void removeData(String org) throws SQLException {
+    @Override
+    public void removeData(String org) throws SQLException, MyValidationException {
         Gson gson = new Gson();
-        Databaza.remove(gson.fromJson(org, Zaner.class));
+        validate(org);
+        Zaner zaner = gson.fromJson(org, Zaner.class);
+        Databaza.remove(zaner);
+    }
+
+    public void validate(String org)  {
+        Exception Exception = new Exception();
+        System.out.print(org.substring(3, 5));
+        if ((org == null) || (org.length() <= 3) ||(!org.substring(3, 5).equals("id"))) {
+            throw new MyValidationException("error", Exception);
+        }
     }
 
 }
