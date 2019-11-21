@@ -9,6 +9,8 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -16,7 +18,6 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
-import org.restlet.data.Status;
 
 /**
  *
@@ -34,24 +35,18 @@ public class RestService extends ServerResource implements MyOperations {
 
     @Post("/add/")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Status insertData(String org) throws SQLException {
+    @Override
+    public void insertData(String org) throws SQLException, MyValidationException {
         Gson gson = new Gson();
-        Status status = null;
-
-        if ((org.length() == 0) || (org.length() == 3)) {
-            System.out.println("error 200");
-            status = Status.SERVER_ERROR_SERVICE_UNAVAILABLE;
-        } else if ((org.substring(3, 7).equals("meno")) && (org.length() > 6)) {
-            Zaner zaner = gson.fromJson(org, Zaner.class);
+        validateName(org);
+        Zaner zaner = gson.fromJson(org, Zaner.class);
+        try {
             Databaza.insertData(zaner);
-            status = Status.SUCCESS_OK;
-
-        } else {
-            status = Status.SERVER_ERROR_INTERNAL;
-            System.out.println("error 500");
+        } catch (IOException ex) {
+            Logger.getLogger(RestService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RestService.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return status;
     }
 
     /**
@@ -64,18 +59,32 @@ public class RestService extends ServerResource implements MyOperations {
     @Consumes(MediaType.APPLICATION_JSON)
     @Override
     public void removeData(String org) throws SQLException, MyValidationException {
-        Gson gson = new Gson();
-        validate(org);
-        Zaner zaner = gson.fromJson(org, Zaner.class);
-        Databaza.remove(zaner);
+        try {
+            Gson gson = new Gson();
+            validateId(org);
+            Zaner zaner = gson.fromJson(org, Zaner.class);
+            Databaza.remove(zaner);
+        } catch (IOException ex) {
+            Logger.getLogger(RestService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RestService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public void validate(String org)  {
+    public void validateId(String org)  {
         Exception Exception = new Exception();
-        System.out.print(org.substring(3, 5));
         if ((org == null) || (org.length() <= 3) ||(!org.substring(3, 5).equals("id"))) {
             throw new MyValidationException("error", Exception);
         }
     }
+    
+    
+      public void validateName(String org)  {
+        Exception Exception = new Exception();
+        if ((org == null) || (org.length() <= 3) ||(!org.substring(3, 7).equals("meno"))) {
+            throw new MyValidationException("error", Exception);
+        }
+    }
+    
 
 }

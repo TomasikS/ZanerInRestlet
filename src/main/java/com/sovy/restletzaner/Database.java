@@ -77,10 +77,11 @@ public class Database {
         return zaners;
     }
 
-    public void insertData(Zaner meno) throws SQLException {
+    public void insertData(Zaner meno) throws SQLException, IOException, ClassNotFoundException {
         String sql = "INSERT INTO zaner (meno) VALUES (?)";
-        Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");
-        PreparedStatement statement = connection.prepareStatement(sql);
+       // Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");
+        Connection connection = createConnection();
+       PreparedStatement statement = connection.prepareStatement(sql);
         // statement.setInt(1, id);
         statement.setString(1, meno.getName());
 
@@ -92,17 +93,17 @@ public class Database {
 
     }
 
-    void remove(Zaner zaner) throws SQLException {
+    void remove(Zaner zaner) throws SQLException, IOException, FileNotFoundException, ClassNotFoundException {
 
-        String url = "jdbc:postgresql://localhost:5432/bookstore";
+      /*  String url = "jdbc:postgresql://localhost:5432/bookstore";
         String user = "postgres";
         String password = "postgres";
-        Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");
+        Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");*/
+      
+       Connection connection = createConnection();
         String sql = "DELETE FROM zaner WHERE id=? ";
-
-        PreparedStatement statement = conn.prepareStatement(sql);
+        PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, zaner.getId());
-
         int rowsDeleted = statement.executeUpdate();
         if (rowsDeleted > 0) {
             System.out.println("A user was deleted successfully!");
@@ -110,13 +111,15 @@ public class Database {
 
     }
 
-    public Zaner getZanerById(Integer id) {
-        String url = "jdbc:postgresql://localhost:5432/bookstore";
+    public Zaner getZanerById(Integer id) throws IOException, SQLException, FileNotFoundException, ClassNotFoundException {
+       /* String url = "jdbc:postgresql://localhost:5432/bookstore";
         String user = "postgres";
-        String password = "postgres";
+        String password = "postgres";*/
+       
+      
         String query = "select *  from zaner where id=" + id;
         Zaner zaner = null;
-        try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/bookstore", "postgres", "postgres");
+        try (Connection connection = createConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -133,14 +136,14 @@ public class Database {
         return zaner;
     }
 
-    public void updateById(Integer id, Zaner zaner) {
-        String url = "jdbc:postgresql://localhost:5432/bookstore";
+    public void updateById(Integer id, Zaner zaner) throws IOException, SQLException, ClassNotFoundException {
+      /*  String url = "jdbc:postgresql://localhost:5432/bookstore";
         String user = "postgres";
-        String password = "postgres";
+        String password = "postgres";*/
         //Zaner Foundedzaner = getZanerById(id)
         String sql = "update zaner set meno = '" + zaner.getName() + "'where id=" + id;
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
+        try (Connection conn = createConnection();
                 Statement stmt = conn.createStatement();) {
 
             stmt.executeUpdate(sql);

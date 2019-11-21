@@ -6,6 +6,8 @@
 package com.sovy.restletzaner;
 
 import com.google.gson.Gson;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -23,15 +25,33 @@ public class RestService2 extends ServerResource {
 
     @Get("/find/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Zaner findData() throws SQLException {
+    public Zaner findData() throws SQLException, MyValidationException, IOException, FileNotFoundException, ClassNotFoundException {
         Integer id = Integer.valueOf(this.getAttribute("id"));
+        validateId(id);
         return Databaza.getZanerById(id);
     }
 
     @Put("/update/{id}")
-    public void updateData(String data) throws SQLException {
-      Integer ud = Integer.valueOf(this.getAttribute("id"));
-       Gson gson = new Gson();
-       Databaza.updateById(ud,gson.fromJson( data, Zaner.class));
+    public void updateData(String data) throws SQLException, IOException, ClassNotFoundException, MyValidationException {
+        Integer id = Integer.valueOf(this.getAttribute("id"));
+        validateId(id);
+        validateName(data);
+        Gson gson = new Gson();
+        Databaza.updateById(id, gson.fromJson(data, Zaner.class));
+
+    }
+
+    public void validateId(Integer id) {
+        Exception Exception = new Exception();
+        if (id == null) {
+            throw new MyValidationException("error", Exception);
+        }
+    }
+
+    public void validateName(String org) {
+        Exception Exception = new Exception();
+        if ((org == null) || (org.length() <= 3) || (!org.substring(3, 7).equals("meno"))) {
+            throw new MyValidationException("error", Exception);
+        }
     }
 }
